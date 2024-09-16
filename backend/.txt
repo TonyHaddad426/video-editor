@@ -1,0 +1,28 @@
+# TRIM
+docker run --rm -it -v $(pwd):/config linuxserver/ffmpeg -ss 00:00:02 -to 00:00:04 -i /config/no_cheating.mp4 -c copy /config/output.mp4
+
+# ENTIRE VIDEO TO GIF
+docker run --rm -it -v $(pwd):/config linuxserver/ffmpeg -i /config/no_cheating.mp4 -f gif /config/output.gif
+
+#ENTIRE VIDEO CREATE COLOR PALETTE + GIF
+docker run --rm -it -v $(pwd):/config linuxserver/ffmpeg -i /config/no_cheating.mp4 -filter_complex "[0:v] palettegen" config/palette.png 
+docker run --rm -it -v $(pwd):/config linuxserver/ffmpeg -i /config/no_cheating.mp4 -i config/palette.png -filter_complex "[0:v][1:v] paletteuse" config/output2.gif
+
+# ADD MULTI LINE TEXT TO VIDEO
+docker run --rm -it -v $(pwd):/config linuxserver/ffmpeg -i /config/no_cheating.mp4 -vf "[in]drawtext=fontsize=20:fontcolor=White:fontfile='/Windows/Fonts/arial.ttf':text='onLine1':x=(w)/2:y=(h)/2, drawtext=fontsize=20:fontcolor=White:fontfile='/Windows/Fonts/arial.ttf':text='onLine2':x=(w)/2:y=((h)/2)+25, drawtext=fontsize=20:fontcolor=White:fontfile='/Windows/Fonts/arial.ttf':text='onLine3':x=(w)/2:y=((h)/2)+50[out]" -y config/output_with_text.gif
+
+
+ffmpeg no_cheating.mp4 -i no_cheating.mp4 -vf drawtext="[in]fontsize=30:fontfile=FreeSerif.ttf:text='hello world':x=if(eq(mod(t\,30)\,0)\,rand(0\,(w-text_w))\,x):y=if(eq(mod(t\,30)\,0)\,rand(0\,(h-text_h))\,y)[out]" -c copy output_with_text.mp4 
+
+ffmpeg -i gif_output.gif -vf "drawtext=fontfile=/path/to/font.ttf:text='Stack Overflow':fontcolor=white:fontsize=24:box=1:boxcolor=black@0.5:boxborderw=5:x=(w-text_w)/2:y=(h-text_h)/2,drawtext=fontfile=/path/to/font.ttf:text='Bottom right text':fontcolor=black:fontsize=14:x=w-tw-10:y=h-th-10" -codec:a copy gif_output.gif
+
+
+curl -X POST http://127.0.0.1:5000/videoTrim -H 'Content-Type: application/json' -d '{"fileUrl":"https://video-editor.s3.amazonaws.com/ffbe93ae-522d-4640-8197-5c356bd8d444%2FIMG_4588.MOV","fileKey":"ffbe93ae-522d-4640-8197-5c356bd8d444/IMG_4588.MOV","start":"00:00:04","end":"00:00:06"}'
+
+curl -X POST http://127.0.0.1:5000/watermark -H 'Content-Type: application/json' -d '{"fileKey":"bd1e76d5-2538-4a28-97a0-96894263d4fc", "fileUrl":"https://video-editor.s3.amazonaws.com/2f04ddd2-fece-4d73-9ce5-99bd729527c4/videos/bd1e76d5-2538-4a28-97a0-96894263d4fc.mp4", "watermarkUrl":"https://www.gettyimages.com/detail/news-photo/sacha-baron-cohen-as-borat-during-2006-cannes-film-festival-news-photo/130093214","watermarkTransparency":"50","watermarkLocation":"Centered"}'
+
+curl -X POST http://127.0.0.1:5000/removeAudio -H 'Content-Type: application/json' -d '{"fileKey":"bd1e76d5-2538-4a28-97a0-96894263d4fc", "fileUrl":"https://video-editor.s3.amazonaws.com/2f04ddd2-fece-4d73-9ce5-99bd729527c4/videos/bd1e76d5-2538-4a28-97a0-96894263d4fc.mp4"}'
+
+curl -X POST http://127.0.0.1:5000/videoToGIF -H 'Content-Type: application/json' -d '{"fileUrl":"https://video-editor.s3.amazonaws.com/6219135e-948a-46ae-9a3e-35ef323ec283%2F20d6fe1a-7010-4adc-b8ef-31f435a56938.MOV","fileKey":"6219135e-948a-46ae-9a3e-35ef323ec283/20d6fe1a-7010-4adc-b8ef-31f435a56938.MOV"}'
+
+curl -X POST http://172.22.0.2:5000/removeAudio -H 'Content-Type: application/json' -d '{"fileKey":"bd1e76d5-2538-4a28-97a0-96894263d4fc", "fileUrl":"https://video-editor.s3.amazonaws.com/2f04ddd2-fece-4d73-9ce5-99bd729527c4/videos/bd1e76d5-2538-4a28-97a0-96894263d4fc.mp4"}'

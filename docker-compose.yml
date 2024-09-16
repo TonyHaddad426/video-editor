@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+   back-end:
+      image: video-editor
+      ports:
+         - "5000"
+   nginx:
+      image: proxy
+      depends_on:
+        - back-end
+      ports:
+         - "8080:80"
+   client:
+      image: client
+      depends_on:
+        - nginx
+      ports:
+         - "8000:3000"
+
