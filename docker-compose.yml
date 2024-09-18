@@ -1,18 +1,25 @@
-version: '3'
-
 services:
    back-end:
       image: video-editor
+      build: 
+         context: backend 
+         dockerfile: Dockerfile
       ports:
-         - "5000"
+         - "5000:5000"
    nginx:
       image: proxy
+      build:
+         context: proxy
+         dockerfile: Dockerfile
       depends_on:
         - back-end
       ports:
          - "8080:80"
    client:
       image: client
+      build:
+         context: client
+         dockerfile: Dockerfile
       depends_on:
         - nginx
       ports:
